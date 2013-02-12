@@ -9,6 +9,7 @@ public class CardFactory {
 	private int totalwin;
 	private int[] win_counts;
 	private Random rng;
+	private int[] nums;
 	/**
 	 * CardFactory constructor
 	 * 
@@ -23,6 +24,12 @@ public class CardFactory {
 		win_counts = new int[6];
 		for (int i=0; i<6; i++) {
 			win_counts[i] = 0;
+		}
+		
+		//initialize nums array
+		nums = new int[50000];
+		for (int i=0; i<nums.length; i++) {
+			nums[i] = i;
 		}
 		
 		//create the cards
@@ -51,20 +58,44 @@ public class CardFactory {
 	 */
 	public void createCards() {
 		Card newCard = null;
-		List<Fruits[]> tabs = new ArrayList<Fruits[]>(5);
+		List<Tab> tabs = new ArrayList<Tab>(5);
 		//randomly generated number used to determine the prize.
-		int num = rng.nextInt(50000)+1; 
+		int chance = 0;
 		//randomly generated number used to determine the position of the winning tab on the card. 
 		final int pos = rng.nextInt(5);
 		//randomly generated number used to determine the chance for near misses.
 		final int nearmiss = rng.nextInt(100)+1; 
 		boolean goAgain = true;
 		
+		//initialize Tabs list
+		for(int i=0; i<5; i++) 
+			tabs.add(null);
+		
 		while (goAgain) {
-			//3 Cherries
-			if (num > 0 && num < 5 && win_counts[0] < 5) {
-				createWinTab(0);
-				goAgain = false;
+			chance = rng.nextInt(50000); 
+			//if chance generated has not been generated before
+			if (nums[chance] != -1) {
+				nums[chance] = -1;
+				//3 Cherries
+				if (chance < 4 && win_counts[0] < 5) {
+					tabs.set(pos, createWinTab(0));
+					for (int i=0; i<tabs.size(); i++) {
+						if (tabs.get(i) == null) {
+							tabs.set(i, new Tab (new Fruits[] {Fruits.BANANA, Fruits.BLUEBERRY, Fruits.BANANA}));
+						}
+					}
+					goAgain = false;
+					cards.add(new Card(tabs, 500));
+					totalwin += 500;
+					win_counts[0] += 1;
+				//TODO: Test else clause
+				} else {
+					for (int i=0; i<5; i++) {
+						tabs.set(i, new Tab (new Fruits[] {Fruits.BANANA, Fruits.BANANA, Fruits.PEAR}));
+					}
+					goAgain = false;
+					cards.add(new Card(tabs, 0));
+				}
 			}
 		}
 		
@@ -73,8 +104,8 @@ public class CardFactory {
 	/**
 	 * This method will create 1 of the 5 winning tabs.
 	 * 
-	 * @param type
-	 * @return
+	 * @param type  value=[0,5]
+	 * @return		the generated winning tab
 	 */
 	private Tab createWinTab(int type) {
 		Tab t = null;

@@ -3,15 +3,15 @@ package com.berrifruiti.cards;
 import java.util.List;
 
 public class Card {
-	private List<Fruits[]> tabs;
+	private List<Tab> tabs;
 	private int prize;
 	
-	public Card(List<Fruits[]> t, int p) {
+	public Card(List<Tab> t, int p) {
 		this.prize = p;
 		this.tabs = t;
 	}
 	
-	public List<Fruits[]> getTabs() {
+	public List<Tab> getTabs() {
 		return tabs;
 	}
 	
