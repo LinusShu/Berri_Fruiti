@@ -4,9 +4,9 @@ import java.util.List;
 
 public class Card {
 	private List<Tab> tabs;
-	private int prize;
+	private float prize;
 	
-	public Card(List<Tab> t, int p) {
+	public Card(List<Tab> t, float p) {
 		this.prize = p;
 		this.tabs = t;
 	}
@@ -15,7 +15,7 @@ public class Card {
 		return tabs;
 	}
 	
-	public int getPrize() {
+	public float getPrize() {
 		return prize;
 	}
 }

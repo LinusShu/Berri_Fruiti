@@ -7,6 +7,7 @@ public class Tab {
 		if (c.length > 3) 
 			System.err.println("Error: Only 3 symbols are allawed on 1 tab!");
 		symbols = new Fruits[3];
+		
 		this.symbols = c;
 	}
 	

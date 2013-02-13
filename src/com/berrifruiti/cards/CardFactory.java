@@ -6,10 +6,10 @@ import java.util.Random;
 
 public class CardFactory {
 	private List<Card> cards;
-	private int totalwin;
+	private float totalwin;
 	private int[] win_counts;
 	private Random rng;
-	private int[] nums;
+	private byte[] nums;
 	/**
 	 * CardFactory constructor
 	 * 
@@ -26,10 +26,11 @@ public class CardFactory {
 			win_counts[i] = 0;
 		}
 		
+		
 		//initialize nums array
-		nums = new int[50000];
+		nums = new byte[50000];
 		for (int i=0; i<nums.length; i++) {
-			nums[i] = i;
+			nums[i] = 1;
 		}
 		
 		//create the cards
@@ -48,7 +49,7 @@ public class CardFactory {
 	/**
 	 * @return the total payout on all cards.
 	 */
-	public int getTotalWin() {
+	public float getTotalWin() {
 		return totalwin;
 	}
 	
@@ -72,13 +73,15 @@ public class CardFactory {
 			tabs.add(null);
 		
 		while (goAgain) {
+			//generate a new chance
 			chance = rng.nextInt(50000); 
 			//if chance generated has not been generated before
-			if (nums[chance] != -1) {
-				nums[chance] = -1;
+			if (nums[chance] != 0) {
+				nums[chance] = 0;
 				//3 Cherries
 				if (chance < 4 && win_counts[0] < 5) {
 					tabs.set(pos, createWinTab(0));
+					//TODO: Randomly generate Near Misses
 					for (int i=0; i<tabs.size(); i++) {
 						if (tabs.get(i) == null) {
 							tabs.set(i, new Tab (new Fruits[] {Fruits.BANANA, Fruits.BLUEBERRY, Fruits.BANANA}));
@@ -88,7 +91,87 @@ public class CardFactory {
 					cards.add(new Card(tabs, 500));
 					totalwin += 500;
 					win_counts[0] += 1;
-				//TODO: Test else clause
+					
+				//3 BANANAS
+				} else if (chance >= 4 && chance < 34 && win_counts[1] < 30) {
+					tabs.set(pos, createWinTab(1));
+					
+					for (int i=0; i<tabs.size(); i++) {
+						if (tabs.get(i) == null) {
+							tabs.set(i, new Tab (new Fruits[] {Fruits.BANANA, Fruits.BLUEBERRY, Fruits.BANANA}));
+						}
+					}
+					
+					cards.add(new Card(tabs, 100));
+					goAgain = false;
+					totalwin += 100;
+					win_counts[1] += 1;
+					
+				//3 PEARS
+				} else if (chance >= 34 && chance < 54 && win_counts[2] < 20) {
+					tabs.set(pos, createWinTab(2));
+					
+					//TODO: Randomly generate Near Misses
+					for (int i=0; i<tabs.size(); i++) {
+						if (tabs.get(i) == null) {
+							tabs.set(i, new Tab (new Fruits[] {Fruits.BANANA, Fruits.BLUEBERRY, Fruits.BANANA}));
+						}
+					}
+					
+					cards.add(new Card(tabs, 50));
+					goAgain = false;
+					totalwin += 50;
+					win_counts[2] += 1;
+				
+				//3 BLUEBERRIES
+				} else if (chance >= 54 && chance < 104 && win_counts[3] < 50) {
+					tabs.set(pos, createWinTab(3));
+					
+					//TODO: Randomly generate Near Misses
+					for (int i=0; i<tabs.size(); i++) {
+						if (tabs.get(i) == null) {
+							tabs.set(i, new Tab (new Fruits[] {Fruits.BANANA, Fruits.BLUEBERRY, Fruits.BANANA}));
+						}
+					}
+					
+					cards.add(new Card(tabs, 5));
+					goAgain = false;
+					totalwin += 5;
+					win_counts[3] += 1;
+					
+				//3 APPLES
+				} else if (chance >= 104 && chance < 604 && win_counts[4] < 500) {
+					tabs.set(pos, createWinTab(4));
+					
+					//TODO: Randomly generate Near Misses
+					for (int i=0; i<tabs.size(); i++) {
+						if (tabs.get(i) == null) {
+							tabs.set(i, new Tab (new Fruits[] {Fruits.BANANA, Fruits.BLUEBERRY, Fruits.BANANA}));
+						}
+					}
+					
+					cards.add(new Card(tabs, 2.5f));
+					goAgain = false;
+					totalwin += 2.5f;
+					win_counts[4] += 1;
+					
+				//CHERRY and two others of the same
+				} else if (chance >= 604 && chance < 9604 && win_counts[5] < 9000) {
+					tabs.set(pos, createWinTab(5));
+					
+					//TODO: Randomly generate Near Misses
+					for (int i=0; i<tabs.size(); i++) {
+						if (tabs.get(i) == null) {
+							tabs.set(i, new Tab (new Fruits[] {Fruits.BANANA, Fruits.BLUEBERRY, Fruits.BANANA}));
+						}
+					}
+					
+					cards.add(new Card(tabs, 1.25f));
+					goAgain = false;
+					totalwin += 1.25f;
+					win_counts[5] += 1;
+						
+				//TODO: Test else clause, suppose to generate losing tabs only
 				} else {
 					for (int i=0; i<5; i++) {
 						tabs.set(i, new Tab (new Fruits[] {Fruits.BANANA, Fruits.BANANA, Fruits.PEAR}));
@@ -110,7 +193,7 @@ public class CardFactory {
 	private Tab createWinTab(int type) {
 		Tab t = null;
 		//used to determine which 2 other fruits to use in the "1 cherry and 2 others the same" win.
-		int n = rng.nextInt(5)+1; 
+		int n = rng.nextInt(4)+1; 
 
 		switch (type) {
 			//3 Cherries
@@ -135,6 +218,7 @@ public class CardFactory {
 				break;
 			//1 Cherry & 2 others of the same
 			case 5:
+				t = new Tab(new Fruits[] {null, null, null});
 				//assign 1 cherry to a random slot on the tab
 				t.setSymbol(rng.nextInt(3), Fruits.CHERRY);
 				//assign 2 others of the same to the remaining slots on the tab
